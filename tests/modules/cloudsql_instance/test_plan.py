@@ -123,8 +123,9 @@ def test_simple_instance_ipv4_enable(plan_runner):
   "Test instance ipv4_enabled."
 
   _, resources = plan_runner(ipv4_enabled="true")
-  assert len(resources) == 1 
-  assert r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled'] == True
+  assert len(resources) == 1
+  assert resources[0]['values']['settings'][0]['ip_configuration'][0][
+      'ipv4_enabled'] == True
 
 
 def test_replicas_ipv4_enable(plan_runner):
@@ -135,8 +136,9 @@ def test_replicas_ipv4_enable(plan_runner):
   }"""
 
   _, resources = plan_runner(replicas=replicas, ipv4_enabled="true")
-  
+
   assert len(resources) == 2
-  r = resources[1]
-  assert r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled'] == True
-  
+  assert all([
+      r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled']
+      for r in resources
+  ])
