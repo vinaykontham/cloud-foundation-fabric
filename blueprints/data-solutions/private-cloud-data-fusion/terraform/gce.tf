@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+data "google_compute_zones" "available" {
+  project = var.project_id
+  region  = var.region
+  status  = "UP"
+}
+
 resource "google_compute_instance" "cloudsql_proxy" {
   name         = "cloudsql-proxy-${local.sql_instance_name}"
   machine_type = "e2-small"
@@ -30,7 +36,7 @@ resource "google_compute_instance" "cloudsql_proxy" {
 
   network_interface {
     network    = module.vpc.name
-    subnetwork = google_compute_subnetwork.subnet.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/gce"]
   }
 
   metadata_startup_script = <<EOF
@@ -41,7 +47,7 @@ resource "google_compute_instance" "cloudsql_proxy" {
   EOF
 
   service_account {
-    email  = google_service_account.proxy_sa.email
+    email  = module.sql_client_service_account.email
     scopes = ["cloud-platform"]
   }
 }
@@ -61,7 +67,7 @@ resource "google_compute_instance" "mysql_client" {
 
   network_interface {
     network    = module.vpc.name
-    subnetwork = google_compute_subnetwork.subnet.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/gce"]
   }
 
   metadata_startup_script = <<EOF
@@ -80,7 +86,7 @@ resource "google_compute_instance" "mysql_client" {
   EOF
 
   service_account {
-    email  = google_service_account.proxy_sa.email
+    email  = module.sql_client_service_account.email
     scopes = ["cloud-platform"]
   }
 }

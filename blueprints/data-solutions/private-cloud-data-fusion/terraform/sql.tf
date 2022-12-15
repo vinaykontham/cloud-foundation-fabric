@@ -35,8 +35,6 @@ resource "google_sql_database_instance" "instance" {
       ipv4_enabled    = false
     }
   }
-
-  depends_on = [google_service_networking_connection.private_service_connection]
 }
 
 resource "google_sql_user" "datafusion" {

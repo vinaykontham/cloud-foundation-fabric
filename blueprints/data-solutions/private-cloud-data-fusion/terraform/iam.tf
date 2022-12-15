@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "cloudproxy-service-account" {
+module "sql_client_service_account" {
   source       = "../../../../modules/iam-service-account"
   project_id   = var.project_id
   name         = "${local.sql_instance_name}-cloudsql-proxy"

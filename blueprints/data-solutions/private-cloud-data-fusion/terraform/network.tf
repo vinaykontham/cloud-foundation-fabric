@@ -15,16 +15,18 @@
 module "vpc" {
   source     = "../../../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${var.prefix}-vpc"
+  name       = var.network_name
   subnets = [
     {
-      ip_cidr_range = "10.0.0.0/24"
-      name          = "gce-${var.region}"
+      ip_cidr_range = var.subnetwork_cidr
+      name          = "gce"
       region        = var.region
     }
   ]
   psa_config = {
-    ranges = { servicenetworking = "10.200.0.0/16" }
+    ranges = { servicenetworking = var.subnetwork_cidr }
+    export_routes = true
+    import_routes = true
   }
 }
 
@@ -32,12 +34,10 @@ module "nat" {
   source         = "../../../../modules/net-cloudnat"
   project_id     = var.project_id
   region         = var.region
-  name           = "${var.prefix}-nat"
+  name           = "${module.vpc.name}-nat"
   router_network = module.vpc.name
 }
 
-
-## Firewall ## 
 resource "google_compute_firewall" "allow_ssh" {
   name    = "allow-ssh-from-iap"
   network = module.vpc.name

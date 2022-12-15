@@ -13,12 +13,6 @@
 # limitations under the License.
 
 
-variable "prefix" {
-  type        = string
-  description = "Prefix used for resource creation"
-  default     = "private-demo"
-}
-
 variable "project_id" {
   description = "GCP Project ID"
   default     = null
@@ -36,12 +30,41 @@ variable "network_name" {
   default     = "vpc-data"
 }
 
+variable "servicenetworking_cidr" {
+  type        = string
+  description = "Service Networking CIDR"
+  default     = "10.200.0.0/22"
+}
+
+variable "subnetwork_cidr" {
+  type        = string
+  description = "GCE subnet CIDR"
+  default     = "10.0.1.0/24"
+}
+
+variable "cdf_instance_name" {
+  type        = string
+  description = "Cloud Data Fusion instance name"
+  default     = "private-cdf"
+}
+
+variable "cdf_cidr" {
+  type        = string
+  description = "Cloud Data Fusion network CIDR"
+  default     = "10.200.4.0/22"
+}
+
+variable "cdf_type" {
+  type        = string
+  description = "Cloud Data Fusion instance type"
+  default     = "DEVELOPER"
+}
+
 variable "db_password" {
   type        = string
   description = "Database default password"
   default     = "supersecret"
 }
-
 
 variable "resource_labels" {
   type        = map(string)
