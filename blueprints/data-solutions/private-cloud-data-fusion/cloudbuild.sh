@@ -62,6 +62,9 @@ else
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/editor
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/iam.securityAdmin
     gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/compute.networkAdmin
+    
+    # wait for permissions to propagate
+    sleep 30
 
     echo Triggering Cloud Build job...
     gcloud builds submit . \
