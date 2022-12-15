@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  sql_instance_name = "mysql-${random_id.db_name_suffix.hex}"
+}
+
 resource "random_id" "db_name_suffix" {
   byte_length = 4
 }
@@ -27,7 +31,7 @@ resource "google_sql_database_instance" "instance" {
     user_labels = var.resource_labels
 
     ip_configuration {
-      private_network = module.vpc.network_self_link
+      private_network = module.vpc.self_link
       ipv4_enabled    = false
     }
   }

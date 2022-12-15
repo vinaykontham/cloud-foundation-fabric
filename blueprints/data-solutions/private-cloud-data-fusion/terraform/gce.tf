@@ -29,7 +29,7 @@ resource "google_compute_instance" "cloudsql_proxy" {
   }
 
   network_interface {
-    network    = module.vpc.network_name
+    network    = module.vpc.name
     subnetwork = google_compute_subnetwork.subnet.self_link
   }
 
@@ -60,7 +60,7 @@ resource "google_compute_instance" "mysql_client" {
   }
 
   network_interface {
-    network    = module.vpc.network_name
+    network    = module.vpc.name
     subnetwork = google_compute_subnetwork.subnet.self_link
   }
 

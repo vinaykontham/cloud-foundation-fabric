@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  servicenetworking_cidr = "10.200.0.0"  #/16
-  cdf_cidr        = "10.124.40.0" #/22
 
-  cdf_instance_name = "cdf-private"
-  sql_instance_name = "mysql-${random_id.db_name_suffix.hex}"
+variable "prefix" {
+  type        = string
+  description = "Prefix used for resource creation"
+  default     = "private-demo"
 }
 
 variable "project_id" {
@@ -43,13 +42,15 @@ variable "db_password" {
   default     = "supersecret"
 }
 
+
 variable "resource_labels" {
   type        = map(string)
   description = "Resource labels"
   default = {
+    app         = var.prefix
     deployed_by = "cloudbuild"
     env         = "sandbox"
-    repo        = "private-cloud-data-fusion"
+    repo        = "cloud-foundation-fabric"
     terraform   = "true"
   }
 }

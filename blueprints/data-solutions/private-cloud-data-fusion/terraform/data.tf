@@ -13,11 +13,11 @@
 # limitations under the License.
 
 data "google_project" "project" {
-    project_id = var.project_id
+  project_id = var.project_id
 }
 
 data "google_compute_zones" "available" {
-    project = var.project_id
-    region = var.region
-    status = "UP"
+  project = var.project_id
+  region  = var.region
+  status  = "UP"
 }

@@ -12,40 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_data_fusion_instance" "cdf_private" {
-  name                          = local.cdf_instance_name
+locals {
+  cdf_cidr = "10.124.40.0/22"
+}
+
+module "datafusion" {
+  source = "../../../modules/datafusion"
+
+  project_id                    = var.project_id
+  name                          = var.prefix
   description                   = "Cloud Data Fusion private instance"
   region                        = var.region
+  network                       = module.vpc.name
+  ip_allocation_create          = false
+  ip_allocation                 = local.cdf_cidr
   type                          = "DEVELOPER"
   version                       = "6.7.2"
   enable_stackdriver_logging    = true
   enable_stackdriver_monitoring = true
   labels                        = var.resource_labels
-  private_instance              = true
+}
 
-  network_config {
-    network       = module.vpc.network_name
-    ip_allocation = "${local.cdf_cidr}/22"
+resource "google_compute_firewall" "allow_private_data_fusion" {
+  name    = "${var.prefix}-allow-private-cdf"
+  network = module.vpc.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "3306", "5432", "1433"]
   }
 
-  depends_on = [
-    google_compute_global_address.cdf
-  ]
-}
-
-resource "google_compute_global_address" "cdf" {
-  name          = "cdf-${var.region}-${local.cdf_instance_name}-address"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  address       = local.cdf_cidr
-  prefix_length = 22
-  network       = module.vpc.network_name
-}
-
-resource "google_compute_network_peering" "cdf" {
-  name                 = "cdf-${var.region}-${local.cdf_instance_name}-peering"
-  network              = module.vpc.network_id
-  peer_network         = "projects/${google_data_fusion_instance.cdf_private.tenant_project_id}/global/networks/${var.region}-${local.cdf_instance_name}"
-  export_custom_routes = true
-  import_custom_routes = true
+  source_ranges = [local.cdf_cidr]
 }

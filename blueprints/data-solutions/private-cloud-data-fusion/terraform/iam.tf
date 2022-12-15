@@ -12,25 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_service_account" "proxy_sa" {
-  account_id   = "cloudsql-proxy"
-  display_name = "Service Account for Cloud SQL proxy vms"
-}
-
-resource "google_project_iam_member" "sql_client" {
-  project = var.project_id
-  role    = "roles/cloudsql.client"
-  member  = "serviceAccount:${google_service_account.proxy_sa.email}"
-}
-
-resource "google_project_iam_member" "monitoring" {
-  project = var.project_id
-  role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.proxy_sa.email}"
-}
-
-resource "google_project_iam_member" "logging" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.proxy_sa.email}"
+module "cloudproxy-service-account" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.project_id
+  name         = "${local.sql_instance_name}-cloudsql-proxy"
+  generate_key = false
+  iam_project_roles = {
+    var.project_id = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/cloudsql.client",
+    ]
+  }
 }
