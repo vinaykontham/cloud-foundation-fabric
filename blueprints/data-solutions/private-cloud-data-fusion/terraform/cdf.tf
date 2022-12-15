@@ -17,7 +17,7 @@ locals {
 }
 
 module "datafusion" {
-  source = "../../../modules/datafusion"
+  source = "../../../../modules/datafusion"
 
   project_id                    = var.project_id
   name                          = var.prefix
@@ -27,7 +27,6 @@ module "datafusion" {
   ip_allocation_create          = false
   ip_allocation                 = local.cdf_cidr
   type                          = "DEVELOPER"
-  version                       = "6.7.2"
   enable_stackdriver_logging    = true
   enable_stackdriver_monitoring = true
   labels                        = var.resource_labels

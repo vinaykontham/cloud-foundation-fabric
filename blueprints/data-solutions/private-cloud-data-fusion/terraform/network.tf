@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "vpc" {
-  source     = "../../../modules/net-vpc"
+  source     = "../../../../modules/net-vpc"
   project_id = var.project_id
   name       = "${var.prefix}-vpc"
   subnets = [
@@ -29,7 +29,7 @@ module "vpc" {
 }
 
 module "nat" {
-  source         = "../../../modules/net-cloudnat"
+  source         = "../../../../modules/net-cloudnat"
   project_id     = var.project_id
   region         = var.region
   name           = "${var.prefix}-nat"

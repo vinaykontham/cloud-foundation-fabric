@@ -47,7 +47,6 @@ variable "resource_labels" {
   type        = map(string)
   description = "Resource labels"
   default = {
-    app         = var.prefix
     deployed_by = "cloudbuild"
     env         = "sandbox"
     repo        = "cloud-foundation-fabric"

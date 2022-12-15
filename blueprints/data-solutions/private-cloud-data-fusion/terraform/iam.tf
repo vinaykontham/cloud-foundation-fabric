@@ -13,12 +13,12 @@
 # limitations under the License.
 
 module "cloudproxy-service-account" {
-  source       = "../../../modules/iam-service-account"
+  source       = "../../../../modules/iam-service-account"
   project_id   = var.project_id
   name         = "${local.sql_instance_name}-cloudsql-proxy"
   generate_key = false
   iam_project_roles = {
-    var.project_id = [
+    "${var.project_id}" = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/cloudsql.client",
