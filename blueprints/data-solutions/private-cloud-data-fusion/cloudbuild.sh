@@ -23,11 +23,14 @@ then
    export GOOGLE_CLOUD_PROJECT=$var_project_id
 fi
 
+BASEDIR=$(dirname $0)
 
 if [ "$1" = "destroy" ]
 then
     echo Destroying solution on project $GOOGLE_CLOUD_PROJECT
-    gcloud builds submit . --config cloudbuild_destroy.yaml
+    gcloud builds submit . \
+    --config $BASEDIR/cloudbuild_destroy.yaml \
+    --substitutions=_TF_DIR="$BASEDIR/terraform"
 else
     echo Deploying solution onto project $GOOGLE_CLOUD_PROJECT
     BUCKET_NAME=gs://$GOOGLE_CLOUD_PROJECT-tf-state
@@ -38,30 +41,32 @@ else
         gsutil mb $BUCKET_NAME
     fi
 
-    echo Enabling required APIs...
-    gcloud services enable cloudbuild.googleapis.com \
-        bigquery.googleapis.com \
-        cloudresourcemanager.googleapis.com \
-        compute.googleapis.com \
-        container.googleapis.com \
-        datafusion.googleapis.com\
-        dataproc.googleapis.com\
-        servicenetworking.googleapis.com \
-        sqladmin.googleapis.com \
-        storage.googleapis.com
+    # echo Enabling required APIs...
+    # gcloud services enable cloudbuild.googleapis.com \
+    #     bigquery.googleapis.com \
+    #     cloudresourcemanager.googleapis.com \
+    #     compute.googleapis.com \
+    #     container.googleapis.com \
+    #     datafusion.googleapis.com\
+    #     dataproc.googleapis.com\
+    #     servicenetworking.googleapis.com \
+    #     sqladmin.googleapis.com \
+    #     storage.googleapis.com
 
-    echo Waiting for APIs activation...
-    sleep 30
+    # echo Waiting for APIs activation...
+    # sleep 30
 
-    echo "Granting Cloud Build's Service Account IAM roles to deploy the resources..."
-    PROJECT_NUMBER=$(gcloud projects describe $GOOGLE_CLOUD_PROJECT --format='value(projectNumber)')
-    MEMBER=serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com
-    gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/editor
-    gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/iam.securityAdmin
-    gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/compute.networkAdmin
+    # echo "Granting Cloud Build's Service Account IAM roles to deploy the resources..."
+    # PROJECT_NUMBER=$(gcloud projects describe $GOOGLE_CLOUD_PROJECT --format='value(projectNumber)')
+    # MEMBER=serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com
+    # gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/editor
+    # gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/iam.securityAdmin
+    # gcloud projects add-iam-policy-binding $GOOGLE_CLOUD_PROJECT --member=$MEMBER --role=roles/compute.networkAdmin
 
     echo Triggering Cloud Build job...
-    gcloud builds submit . --config cloudbuild.yaml
+    gcloud builds submit . \
+    --config $BASEDIR/cloudbuild.yaml \
+    --substitutions=_TF_DIR="$BASEDIR/terraform"
 
     echo Solution deployed successfully!
 fi
