@@ -23,12 +23,6 @@ steps:
     -backend-config="bucket=$PROJECT_ID-tf-state" \
     -backend-config="prefix=data-fusion"
   dir: $_TF_DIR
-      
-- id: 'tf plan'
-  name: 'hashicorp/terraform:$_TF_VERSION'
-  args: 
-  - plan
-  dir: $_TF_DIR
 
 - id: 'tf apply'
   name: 'hashicorp/terraform:$_TF_VERSION'
@@ -36,7 +30,6 @@ steps:
   - apply
   - -auto-approve
   dir: $_TF_DIR
-
 
 options:
   env:
@@ -49,6 +42,6 @@ substitutions:
 tags:
   - terraform
   - cloud-data-fusion
-  - plan-apply
+  - apply
 
 timeout: 3600s
