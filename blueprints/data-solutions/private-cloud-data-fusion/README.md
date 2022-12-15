@@ -8,6 +8,11 @@ Resources created
 - Cloud SQL for MySQL
 - Cloud Data Fusion
 
+This blueprint uses Cloud Build to deploy the stack and Cloud Storage to persist the terraform state in your project.
+
+You can see the state files by running the command `gsutil ls gs://<PROJECT_ID>-tf-state`.
+And you can see the deploy history on [Build history](https://console.cloud.google.com/cloud-build/builds).
+
 ## Arquitecture
 ![diagram](diagram.png)
 
