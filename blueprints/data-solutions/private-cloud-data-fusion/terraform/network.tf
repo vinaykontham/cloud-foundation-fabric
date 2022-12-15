@@ -24,7 +24,7 @@ module "vpc" {
     }
   ]
   psa_config = {
-    ranges = { servicenetworking = var.subnetwork_cidr }
+    ranges = { servicenetworking = var.servicenetworking_cidr }
     export_routes = true
     import_routes = true
   }
