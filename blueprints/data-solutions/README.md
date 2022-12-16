@@ -55,3 +55,9 @@ running on a VPC with a private IP and a dedicated Service Account. A GCS bucket
 This [blueprint](./data-platform-foundations/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
 
 <br clear="left">
+
+### Cloud Data Fusion and Cloud SQL private instances
+
+<a href="./private-cloud-data-fusion/" title="Cloud Data Fusion and Cloud SQL private instances"><img src="./private-cloud-data-fusion/diagram.png" align="left" width="280px"></a> This [blueprint](./private-cloud-data-fusion/) implements resources required to run a private Cloud Data Fusion instance and connect it to a private Cloud SQL instance.
+
+<br clear="left">

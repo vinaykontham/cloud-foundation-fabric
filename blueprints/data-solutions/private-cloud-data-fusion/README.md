@@ -1,4 +1,4 @@
-# Google Cloud Private Data Fusion
+# Cloud Data Fusion and Cloud SQL private instances
 
 This repository contains Terraform sample code to deploy Cloud Data Fusion and Cloud SQL private instances, and establish communication between them.
 
