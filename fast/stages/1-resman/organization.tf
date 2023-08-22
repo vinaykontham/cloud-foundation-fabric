@@ -125,6 +125,8 @@ module "organization" {
         values = {
           data       = null
           gke        = null
+          gcve       = null
+          infra      = null
           networking = null
           sandbox    = null
           security   = null

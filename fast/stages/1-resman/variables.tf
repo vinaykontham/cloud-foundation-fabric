@@ -149,6 +149,7 @@ variable "fast_features" {
   type = object({
     data_platform   = optional(bool, false)
     gke             = optional(bool, false)
+    gcve            = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
     teams           = optional(bool, false)
@@ -163,6 +164,7 @@ variable "groups" {
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
   type = object({
     gcp-devops          = optional(string)
+    gcp-gcve-admins     = optional(string)
     gcp-network-admins  = optional(string)
     gcp-security-admins = optional(string)
   })

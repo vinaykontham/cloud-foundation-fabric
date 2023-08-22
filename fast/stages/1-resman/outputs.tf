@@ -257,7 +257,19 @@ output "gke_multitenant" {
     : {}
   )
 }
-
+output "gve" {
+  # tfdoc:output:consumers 03-gcve
+  description = "Data for the GCVE stage."
+  value = (
+    var.fast_features.gcve
+    ? {
+      folder          = module.branch-gcve-folder.0.id
+      gcs_bucket      = module.branch-gcve-gcs.0.name
+      service_account = module.branch-gcve-sa.0.email
+    }
+    : {}
+  )
+}
 output "networking" {
   description = "Data for the networking stage."
   value = {
