@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description GCVE stage resources.
+
 module "branch-gcve-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gcve ? 1 : 0
@@ -21,7 +23,6 @@ module "branch-gcve-folder" {
   name   = "GCVE"
   group_iam = local.groups.gcp-gcve-admins == null ? {} : {
     (local.groups.gcp-gcve-admins) = [
-      #"roles/editor",
       "roles/vmwareengine.vmwareengineAdmin"
     ]
   }
