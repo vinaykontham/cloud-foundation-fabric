@@ -76,6 +76,7 @@ locals {
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
       gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
       gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
+      gcve               = try(module.branch-gcve-folder.0.id, null)
       networking         = try(module.branch-network-folder.id, null)
       networking-dev     = try(module.branch-network-dev-folder.id, null)
       networking-prod    = try(module.branch-network-prod-folder.id, null)
@@ -125,18 +126,20 @@ locals {
         sa            = module.branch-dp-prod-sa.0.email
       })
     },
+    !var.fast_features.gcve ? {} : {
+      "3-gcve" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-gcs.0.name
+        name          = "gcve"
+        sa            = module.branch-gcve-sa.0.email
+      })
+    },
     !var.fast_features.gke ? {} : {
       "3-gke-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-gke-dev-gcs.0.name
         name          = "gke-dev"
         sa            = module.branch-gke-dev-sa.0.email
-      })
-      "3-gke-prod" = templatefile(local._tpl_providers, {
-        backend_extra = null
-        bucket        = module.branch-gke-prod-gcs.0.name
-        name          = "gke-prod"
-        sa            = module.branch-gke-prod-sa.0.email
       })
     },
     !var.fast_features.project_factory ? {} : {
@@ -187,6 +190,7 @@ locals {
       data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       gke-dev              = try(module.branch-gke-dev-sa.0.email, null)
       gke-prod             = try(module.branch-gke-prod-sa.0.email, null)
+      gcve                 = try(module.branch-gcve-sa.0.email, null)
       networking           = module.branch-network-sa.email
       project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
       project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
