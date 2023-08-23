@@ -261,7 +261,7 @@ output "gke_multitenant" {
     : {}
   )
 }
-output "gve" {
+output "gcve" {
   # tfdoc:output:consumers 03-gcve
   description = "Data for the GCVE stage."
   value = (
