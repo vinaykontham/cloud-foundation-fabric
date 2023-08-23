@@ -25,6 +25,7 @@ locals {
     host_project_ids     = local.host_project_ids
     host_project_numbers = local.host_project_numbers
     vpc_self_links       = local.vpc_self_links
+    vpc_psa_connections  = local.vpc_psa_connections
   }
   vpc_self_links = {
     dmz               = module.dmz-vpc.id
@@ -33,6 +34,11 @@ locals {
     shared            = module.shared-vpc.id
     transit-primary   = module.transit-primary-vpc.id
     transit-secondary = module.transit-secondary-vpc.id
+  }
+  vpc_psa_connections = {
+    shared            = module.shared-vpc.psa_connection.1
+    transit-primary   = module.transit-primary-vpc.psa_connection.1
+    transit-secondary = module.transit-secondary-vpc.psa_connection.1
   }
 }
 
@@ -62,6 +68,12 @@ output "host_project_numbers" {
   description = "Network project numbers."
   value       = local.host_project_numbers
 }
+
+output "shared_vpc_psa_connections" {
+  description = "VPC private service access connections."
+  value       = local.vpc_psa_connections
+}
+
 
 output "shared_vpc_self_links" {
   description = "Shared VPC host projects."
