@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Networking stage resources.
+# tfdoc:file:description Infra resources.
 
 module "branch-infra-folder" {
   source = "../../../modules/folder"
