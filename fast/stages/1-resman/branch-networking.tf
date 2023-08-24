@@ -34,7 +34,7 @@ module "branch-network-folder" {
   iam = {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.gcve-prod,
-      local.branch_optional_sa_lists.gcve-dev,
+      local.branch_optional_sa_lists.gcve-dr,
     )
     "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
     "roles/owner"                          = [module.branch-network-sa.iam_email]
