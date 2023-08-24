@@ -139,8 +139,9 @@ module "organization" {
         description = "Environment definition."
         iam         = {}
         values = {
-          development = null
-          production  = null
+          development      = null
+          production       = null
+          disasterrecovery = null
         }
       }
       (var.tag_names.org-policies) = {
