@@ -68,6 +68,11 @@ output "project_id" {
   ]
 }
 
+output "psa_connection" {
+  description = "Private service access connection resource."
+  value       = google_service_networking_connection.psa_connection
+}
+
 output "self_link" {
   description = "Network self link."
   value       = local.network.self_link
