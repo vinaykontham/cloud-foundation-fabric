@@ -25,13 +25,14 @@ locals {
     : ["serviceAccount:${local.automation_resman_sa}"]
   )
   branch_optional_sa_lists = {
-    dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
-    dp-prod  = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
-    gke-dev  = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
-    gke-prod = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
-    gcve     = compact([try(module.branch-gcve-sa.0.iam_email, "")])
-    pf-dev   = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
-    pf-prod  = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
+    dp-dev    = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
+    dp-prod   = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
+    gke-dev   = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
+    gke-prod  = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
+    gcve-dr   = compact([try(module.branch-gcve-dr-sa.0.iam_email, "")])
+    gcve-prod = compact([try(module.branch-gcve-prod-sa.0.iam_email, "")])
+    pf-dev    = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
+    pf-prod   = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
   }
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v

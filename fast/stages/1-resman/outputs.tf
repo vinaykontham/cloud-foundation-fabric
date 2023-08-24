@@ -76,7 +76,8 @@ locals {
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
       gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
       gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
-      gcve               = try(module.branch-gcve-folder.0.id, null)
+      gcve-dr            = try(module.branch-gcve-dr-folder.0.id, null)
+      gcve-prod          = try(module.branch-gcve-prod-folder.0.id, null)
       networking         = try(module.branch-network-folder.id, null)
       networking-dev     = try(module.branch-network-dev-folder.id, null)
       networking-prod    = try(module.branch-network-prod-folder.id, null)
@@ -127,11 +128,17 @@ locals {
       })
     },
     !var.fast_features.gcve ? {} : {
-      "3-gcve" = templatefile(local._tpl_providers, {
+      "3-gcve-dr" = templatefile(local._tpl_providers, {
         backend_extra = null
-        bucket        = module.branch-gcve-gcs.0.name
-        name          = "gcve"
-        sa            = module.branch-gcve-sa.0.email
+        bucket        = module.branch-gcve-dr-gcs.0.name
+        name          = "gcve-dr"
+        sa            = module.branch-gcve-dr-sa.0.email
+      })
+      "3-gcve-prod" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gcve-prod-gcs.0.name
+        name          = "gcve-prod"
+        sa            = module.branch-gcve-prod-sa.0.email
       })
     },
     !var.fast_features.gke ? {} : {
@@ -190,7 +197,8 @@ locals {
       data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       gke-dev              = try(module.branch-gke-dev-sa.0.email, null)
       gke-prod             = try(module.branch-gke-prod-sa.0.email, null)
-      gcve                 = try(module.branch-gcve-sa.0.email, null)
+      gcve-dr              = try(module.branch-gcve-dr-sa.0.email, null)
+      gcve-prod            = try(module.branch-gcve-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
       project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
       project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
@@ -267,9 +275,16 @@ output "gcve" {
   value = (
     var.fast_features.gcve
     ? {
-      folder          = module.branch-gcve-folder.0.id
-      gcs_bucket      = module.branch-gcve-gcs.0.name
-      service_account = module.branch-gcve-sa.0.email
+      "dev" = {
+        folder          = module.branch-gcve-dr-folder.0.id
+        gcs_bucket      = module.branch-gcve-dr-gcs.0.name
+        service_account = module.branch-gcve-dr-sa.0.email
+      }
+      "prod" = {
+        folder          = module.branch-gcve-prod-folder.0.id
+        gcs_bucket      = module.branch-gcve-prod-gcs.0.name
+        service_account = module.branch-gcve-prod-sa.0.email
+      }
     }
     : {}
   )

@@ -26,21 +26,71 @@ module "branch-gcve-folder" {
       "roles/vmwareengine.vmwareengineAdmin"
     ]
   }
-  iam = {
-    "roles/logging.admin"                  = [module.branch-gcve-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-gcve-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-gcve-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-gcve-sa.0.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-gcve-sa.0.iam_email]
-  }
   tag_bindings = {
     context = try(
       module.organization.tag_values["${var.tag_names.context}/gcve"].id, null
     )
   }
 }
+module "branch-gcve-dr-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.gcve ? 1 : 0
+  parent = module.branch-gcve-folder.0.id
+  name   = "Disaster Recovery"
 
-module "branch-gcve-sa" {
+  iam = {
+    "roles/logging.admin"                  = [module.branch-gcve-dr-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-gcve-dr-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gcve-dr-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gcve-dr-sa.0.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gcve-dr-sa.0.iam_email]
+  }
+  tag_bindings = {
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/disasterrecovery"].id, null
+    )
+  }
+}
+
+module "branch-gcve-prod-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.gcve ? 1 : 0
+  parent = module.branch-gcve-folder.0.id
+  name   = "Production"
+
+  iam = {
+    "roles/logging.admin"                  = [module.branch-gcve-prod-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-gcve-prod-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gcve-prod-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gcve-prod-sa.0.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gcve-prod-sa.0.iam_email]
+  }
+  tag_bindings = {
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+    )
+  }
+}
+
+module "branch-gcve-dr-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.gcve ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dr-resman-gcve-0"
+  display_name = "Terraform resman gcve service account."
+  prefix       = var.prefix
+  # To implement later for CI/CD
+  # iam = {
+  #   "roles/iam.serviceAccountTokenCreator" = compact([
+  #     try(module.branch-gcve-sa-cicd.0.iam_email, null)
+  #   ])
+  # }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
+  }
+}
+
+module "branch-gcve-prod-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.gcve ? 1 : 0
   project_id   = var.automation.project_id
@@ -58,7 +108,21 @@ module "branch-gcve-sa" {
   }
 }
 
-module "branch-gcve-gcs" {
+module "branch-gcve-dr-gcs" {
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.gcve ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dr-resman-gcve-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gcve-dr-sa.0.iam_email]
+  }
+}
+
+module "branch-gcve-prod-gcs" {
   source        = "../../../modules/gcs"
   count         = var.fast_features.gcve ? 1 : 0
   project_id    = var.automation.project_id
@@ -68,6 +132,6 @@ module "branch-gcve-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gcve-sa.0.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gcve-prod-sa.0.iam_email]
   }
 }
