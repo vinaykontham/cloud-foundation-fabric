@@ -64,9 +64,11 @@ def parse_page_token(data, url):
   'Detect next page token in result and return next page URL.'
   page_token = data.get('nextPageToken')
   if page_token:
-    logging.info(f'page  token {page_token}')
-  if page_token:
-    return RE_URL.sub(f'pageToken={page_token}&', url)
+    logging.info(f'page token {page_token}')
+    if 'pageToken' in url:
+      return RE_URL.sub(f'pageToken={page_token}', url)
+    else:
+      return f'{url}&pageToken={page_token}'
 
 
 def poor_man_mp_request(urls, boundary='1234567890'):
