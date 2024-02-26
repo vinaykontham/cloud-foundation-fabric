@@ -32,7 +32,8 @@ locals {
   ]
   iam_cur = {
     "roles/bigquery.dataOwner" = [
-      module.processing-sa-0.iam_email
+      module.processing-sa-0.iam_email,
+      module.processing-sa-df-0.iam_email,
     ]
     "roles/bigquery.dataViewer" = [
       module.cur-sa-0.iam_email,
@@ -62,7 +63,8 @@ locals {
     ]
     "roles/storage.admin" = [
       module.processing-sa-0.iam_email,
-      local.groups_iam.data-engineers
+      local.groups_iam.data-engineers,
+      module.processing-sa-df-0.iam_email,
     ]
   }
   # this only works because the service account module uses a static output

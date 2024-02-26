@@ -20,11 +20,15 @@ locals {
       module.land-sa-0.iam_email
     ]
     "roles/storage.objectViewer" = [
-      module.processing-sa-cmp-0.iam_email
+      module.processing-sa-cmp-0.iam_email,
+      module.processing-sa-df-0.iam_email,
     ]
     "roles/storage.admin" = [
       module.processing-sa-0.iam_email,
       local.groups_iam.data-engineers
+    ]
+    "roles/bigquery.dataViewer" = [
+      module.processing-sa-df-0.iam_email,
     ]
   }
   # this only works because the service account module uses a static output

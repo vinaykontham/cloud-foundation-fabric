@@ -18,7 +18,11 @@ locals {
   iam_prc = {
     "roles/bigquery.jobUser" = [
       module.processing-sa-cmp-0.iam_email,
-      module.processing-sa-0.iam_email
+      module.processing-sa-0.iam_email,
+      module.processing-sa-df-0.iam_email,
+    ]
+    "roles/bigquery.dataEditor" = [
+      module.processing-sa-df-0.iam_email,
     ]
     "roles/composer.admin" = [
       local.groups_iam.data-engineers
@@ -27,6 +31,13 @@ locals {
       module.processing-sa-cmp-0.iam_email
     ]
     "roles/dataflow.worker" = [
+      module.processing-sa-0.iam_email
+    ]
+    "roles/dataform.codeEditor" = [
+      local.groups_iam.data-engineers
+    ]
+    "roles/dataform.editor" = [
+      local.groups_iam.data-engineers,
       module.processing-sa-0.iam_email
     ]
     "roles/composer.environmentAndStorageObjectAdmin" = [
