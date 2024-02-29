@@ -91,3 +91,14 @@ module "common-datacatalog" {
   location   = var.location
   tags       = var.data_catalog_tags
 }
+
+# Data Catalog Tag Template
+
+module "common-datacatalog-tag-template" {
+  count      = var.data_catalog_tag_templates != "" ? 1 : 0
+  source     = "../../../modules/data-catalog-tag-template"
+  project_id = module.common-project.project_id
+  factories_config = {
+    tag_templates = var.data_catalog_tag_templates
+  }
+}
