@@ -53,6 +53,31 @@ variable "composer_config" {
   default  = {}
 }
 
+variable "dataform" {
+  description = "Dataform settings to be set if dataform is enabled. Allows for the linking of a 3P Git repository as well"
+  type = object({
+    remote_settings = optional(object({
+      remote_repository_url    = optional(string)
+      remote_repository_branch = optional(string, "main")
+      secret_name              = optional(string, "dataform_remote_token")
+      secret_version           = optional(string, "v1")
+      token                    = optional(string)
+    }), {})
+    processing_layers = optional(object({
+      staging      = string
+      transforming = string
+      exposing     = string
+      }), {
+      staging      = "stg"
+      transforming = "trf"
+      exposing     = "exp"
+      }
+    )
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "data_catalog_tags" {
   description = "List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format."
   type = map(object({
@@ -79,6 +104,7 @@ variable "enable_services" {
   type = object({
     composer                = optional(bool, true)
     dataproc_history_server = optional(bool, true)
+    dataform                = optional(bool, true)
   })
   default = {}
 }
