@@ -167,7 +167,7 @@ module "firewall-policy" {
 
 Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow route management via descriptive configuration files.
 
-Factory configuration is via three optional attributes in the `rules_factory_config` variable:
+Factory configuration is via three optional attributes in the `factories_config` variable:
 
 - `cidr_file_path` specifying the path to a mapping of logical names to CIDR ranges, used for source and destination ranges in rules when available
 - `egress_rules_file_path` specifying the path to the egress rules file
