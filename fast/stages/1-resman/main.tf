@@ -48,11 +48,13 @@ locals {
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
-      v != null &&
+      v != null
+      &&
       contains(
         keys(local.identity_providers),
         coalesce(try(v.identity_provider, null), ":")
-      ) &&
+      )
+      &&
       fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
     )
   }

@@ -197,6 +197,12 @@ variable "top_level_folders" {
   type = map(object({
     name = string
     automation = optional(object({
+      cicd_repository = optional(object({
+        name              = string
+        type              = string
+        branch            = optional(string)
+        identity_provider = optional(string)
+      }))
       enable                      = optional(bool, true)
       sa_impersonation_principals = optional(list(string), [])
     }), {})
@@ -267,4 +273,30 @@ variable "top_level_folders" {
   }))
   nullable = false
   default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.top_level_folders :
+      try(v.automation.cicd_repository, null) == null ||
+      try(v.automation.cicd_repository.name, null) != null
+    ])
+    error_message = "Top-level folder repository name cannot be null if CI/CD is used."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.top_level_folders :
+      try(v.automation.cicd_repository, null) == null ||
+      try(v.automation.cicd_repository.identity_provider, null) != null
+    ])
+    error_message = "Top-level folder identity provider cannot be null if CI/CD is used."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.top_level_folders :
+      try(v.automation.cicd_repository, null) == null || contains(
+        ["github", "gitlab"],
+        try(v.automation.cicd_repository.type, "")
+      )
+    ])
+    error_message = "Invalid top-level folder CI/CD repository type: use 'github' or 'gitlab'."
+  }
 }

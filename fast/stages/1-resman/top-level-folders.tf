@@ -30,7 +30,27 @@ locals {
   }
   top_level_automation = {
     for k, v in local.top_level_folders :
-    k => v.automation if try(v.automation.enable, null) == true
+    k => v.automation if(
+      try(v.automation.enable, null) == true
+      ||
+      try(v.automation.cicd_repository, null) != null
+    )
+  }
+  top_level_cicd_repositories = {
+    for k, v in local.top_level_folders :
+    k => try(v.automation.cicd_repository, null)
+    if(
+      try(v.automation.cicd_repository, null) != null
+      &&
+      contains(
+        keys(local.identity_providers),
+        coalesce(try(v.automation.cicd_repository.identity_provider, null), ":")
+      )
+      &&
+      fileexists(
+        "${path.module}/templates/workflow-${try(v.automation.cicd_repository.type, "")}.yaml"
+      )
+    )
   }
   top_level_folders = merge(
     {
@@ -40,12 +60,13 @@ locals {
           enable                      = true
           sa_impersonation_principals = []
         })
-        contacts              = try(v.contacts, {})
-        firewall_policy       = try(v.firewall_policy, null)
-        logging_data_access   = try(v.logging_data_access, {})
-        logging_exclusions    = try(v.logging_exclusions, {})
-        logging_settings      = try(v.logging_settings, null)
-        logging_sinks         = try(v.logging_sinks, {})
+        contacts            = try(v.contacts, {})
+        firewall_policy     = try(v.firewall_policy, null)
+        logging_data_access = try(v.logging_data_access, {})
+        logging_exclusions  = try(v.logging_exclusions, {})
+        logging_settings    = try(v.logging_settings, null)
+        logging_sinks       = try(v.logging_sinks, {})
+        # TODO: interpolate automation service accounts
         iam                   = try(v.iam, {})
         iam_bindings          = try(v.iam_bindings, {})
         iam_bindings_additive = try(v.iam_bindings_additive, {})
@@ -85,7 +106,12 @@ module "top-level-sa" {
   display_name = "Terraform resman ${each.key} folder service account."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = each.value.sa_impersonation_principals
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      each.value.sa_impersonation_principals,
+      compact([
+        try(module.top-level-sa-cicd[each.key].iam_email, null)
+      ])
+    )
   }
   iam_project_roles = {
     (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
@@ -107,5 +133,62 @@ module "top-level-bucket" {
   iam = {
     "roles/storage.objectAdmin"  = [module.top-level-sa[each.key].iam_email]
     "roles/storage.objectViewer" = [module.top-level-sa[each.key].iam_email]
+  }
+}
+
+# CI/CD
+
+module "top-level-sa-cicd" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.top_level_cicd_repositories
+  project_id   = var.automation.project_id
+  name         = "prod-resman-${each.key}-1"
+  display_name = "Terraform CI/CD ${each.key} folder service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      each.value.branch == null
+      ? format(
+        local.identity_providers[each.value.identity_provider].principal_repo,
+        var.automation.federated_identity_pool,
+        each.value.name
+      )
+      : format(
+        local.identity_providers[each.value.identity_provider].principal_branch,
+        var.automation.federated_identity_pool,
+        each.value.name,
+        each.value.branch
+      )
+    ]
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+module "top-level-r-sa-cicd" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.top_level_cicd_repositories
+  project_id   = var.automation.project_id
+  name         = "prod-resman-${each.key}-1r"
+  display_name = "Terraform CI/CD ${each.key} folder service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      format(
+        local.identity_providers[each.value.identity_provider].principal_repo,
+        var.automation.federated_identity_pool,
+        each.value.name
+      )
+    ]
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }
