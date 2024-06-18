@@ -38,7 +38,7 @@ resource "google_apigee_envgroup" "envgroups" {
   hostnames = each.value
   org_id    = local.org_id
 }
-
+#environment
 resource "google_apigee_environment" "environments" {
   for_each        = local.environments
   name            = each.key
